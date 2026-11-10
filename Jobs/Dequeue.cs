@@ -37,21 +37,9 @@ public sealed class SqlJobQueue : IJobQueue
     {
         using (var connection = Open())
         {
-            await connection.OpenAsync(); 
-
-            using (var transaction = await connection.BeginTransactionAsync())
-            {
-                try
-                {
-                    return await connection.QuerySingleOrDefaultAsync<QueueItem>(_dequeueSql, workerId);
-                }
-                catch(Exception)
-                {
-                    await transaction.RollbackAsync(); 
-                    return new QueueItem(); 
-                }
-
-            }
+            await connection.OpenAsync(ct);            
+                
+            return await connection.QuerySingleOrDefaultAsync<QueueItem>(_dequeueSql, new {WorkerId = workerId});               
         }
     }
 

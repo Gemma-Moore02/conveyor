@@ -11,3 +11,9 @@ Lessons learned
 * BackgroundService is an abstract class that implements IHostedService 
 * .NET Worker template - adds a worker as a hosted service. 
 * IOptions can bind to any c# object 
+
+### 11-9-2026
+Lessons Learned
+* Atomic SQL operations do not need a transaction and the exception should bubble up to the worker
+* `dotnet user-secrets set` - sets a user secret that is automatically merged with your appsettings configuration
+* IOptions can either be used or first tied to a model class (.Value syntax vs using model class directly)
