@@ -17,3 +17,8 @@ Lessons Learned
 * Atomic SQL operations do not need a transaction and the exception should bubble up to the worker
 * `dotnet user-secrets set` - sets a user secret that is automatically merged with your appsettings configuration
 * IOptions can either be used or first tied to a model class (.Value syntax vs using model class directly)
+
+### 11-10-2026
+* In real world scenarios, multiple workers run at once to process jobs. 
+* This was simulated by running two instances of the worker on 20 seeded jobs, which correctly resulted in two processes claiming jobs simultaneously. 
+

@@ -10,7 +10,7 @@ public class Worker(ILogger<Worker> logger, IJobQueue jobQueue, IOptions<QueueOp
         {
             try
             {
-                var item = await jobQueue.TryDequeueAsync("3", stoppingToken);
+                var item = await jobQueue.TryDequeueAsync($"{Environment.MachineName}{Environment.ProcessId}", stoppingToken);
 
                 if (item is  null)
                 {
@@ -20,6 +20,7 @@ public class Worker(ILogger<Worker> logger, IJobQueue jobQueue, IOptions<QueueOp
                 else
                 {
                     logger.LogInformation("Dequeued Job {JobId}, Type: {JobType}", item.Id, item.JobType);
+                    await Task.Delay(3000); 
                 }
             }
             catch (Exception ex)
