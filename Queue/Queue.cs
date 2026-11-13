@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 public interface IJobQueue
 {
     Task<QueueItem?> TryDequeueAsync(string workerId, CancellationToken ct); 
-    // Task CompleteAsync(long JobId, string workerId, CancellationToken ct); 
+    Task<bool> CompleteAsync(long jobId, string workerId, CancellationToken ct);
     // Task FailAsync(Job job, string workerId, string error, CancellationToken ct); 
 }
 
@@ -17,6 +17,14 @@ public sealed class SqlJobQueue : IJobQueue
     public SqlJobQueue(IOptions<QueueOptions> options) => _options = options.Value; 
 
     private SqlConnection Open () => new SqlConnection(_options.ConnectionString); 
+
+    private const string _completeSql = """
+                UPDATE dbo.Jobs 
+                SET Status = 'Complete' 
+                WHERE Id = @JobId 
+                AND Status = 'Processing'
+                AND LockedBy = @WorkerId
+    """;
 
     private const string  _dequeueSql = """                
                 WITH next AS (
@@ -40,6 +48,23 @@ public sealed class SqlJobQueue : IJobQueue
             await connection.OpenAsync(ct);            
                 
             return await connection.QuerySingleOrDefaultAsync<QueueItem>(_dequeueSql, new {WorkerId = workerId});               
+        }
+    }
+
+    public async Task<bool> CompleteAsync(long jobId, string workerId, CancellationToken ct)
+    {
+        using (var connection = Open())
+        {
+            await connection.OpenAsync(ct);
+
+            var rowsAffected = await connection.ExecuteAsync(
+                    new CommandDefinition(
+                        _completeSql,
+                            new {JobId = jobId, WorkerId = @workerId},
+                            cancellationToken: ct
+                    ));
+
+            return rowsAffected > 0;
         }
     }
 

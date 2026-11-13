@@ -22,3 +22,7 @@ Lessons Learned
 * In real world scenarios, multiple workers run at once to process jobs. 
 * This was simulated by running two instances of the worker on 20 seeded jobs, which correctly resulted in two processes claiming jobs simultaneously. 
 
+### 11-12-2026
+* You need to use command definition with dapper to pass in a cancellation token
+* Job type and payload will determine what gets done with that job in the future 
+* There will be a job handler in the future to handle those jobs
