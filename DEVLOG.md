@@ -26,3 +26,4 @@ Lessons Learned
 * You need to use command definition with dapper to pass in a cancellation token
 * Job type and payload will determine what gets done with that job in the future 
 * There will be a job handler in the future to handle those jobs
+* Complete Async checks LockedBy and status so that a worker can only finish its own job 
